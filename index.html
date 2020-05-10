@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon">
+    <title>Weather SPA</title>
+    <link rel="stylesheet" href="index.css">
+    <!-- <link rel="stylesheet" href="slider.css"> -->
+</head>
+<body>
+    <div class="container">
+        <form action="degree">
+            <div>
+                <label for="degree">Degree (Celsius):</label>
+                <input type="number" name="degree" required
+                id="degree" placeholder="type degree" />
+            </div>
+            
+            <div>
+                <input type="radio" value="calm">Calm &lt;1km/h </input>
+                <input type="radio" value="calm">Light air 1-5 km/h</input>
+                <input type="radio" value="calm">Light 6-11 km/h</input>
+                <input type="radio" value="calm">Gentle 12-19 km/h</input>
+                <input type="radio" value="calm">Moderate 20-28 km/h</input>
+                <input type="radio" value="calm">Fresh 29-38 km/h</input>
+                <input type="radio" value="calm">Strong 38-49 km/h</input>
+                <input type="radio" value="calm">Gale 50-74 km/h</input>
+                <input type="radio" value="calm">Strong Gale 75-88 km/h</input>
+                <input type="radio" value="calm">Storm 89-102 km/h</input>
+                <input type="radio" value="calm">Violet Storm 103-117 km/h</input>
+                <input type="radio" value="calm">Hurricane Force &ge;118 km/h</input>
+            </div>
+            <div class="slidecontainer">
+                <label for="wind">Wind km/h:</label>
+                <input type="range" min="0" max="118"
+                 value="5" class="slider" id="wind"
+                 name="wind" />
+            </div>
+
+            <div>
+                <label for="">Date:</label>
+                <input type="date" />
+            </div>
+
+            <div>
+                <label for="">Precipation:</label>
+                <select name="" id="">
+                    <option value="rain">No precipation</option>
+
+                    <option value="rain">Sunny</option>
+                    <option value="rain">Partly sunny</option>
+                    <option value="rain">Cloudy</option>
+
+                    <option value="rain">Short rain</option>
+                    <option value="rain">Little rain</option>
+                    <option value="rain">Rain</option>
+                    <option  ption value="rain">Heavy rain</option>
+
+                    <option value="rain">Storm</option>
+                    <option value="rain">Thunder storm</option>
+
+                    <option value="rain">Snow</option>
+                    <option value="rain">Sleet</option>
+                    <option value="rain">Hail</option>
+                </select>
+            </div>
+            
+            
+            <button type="submit" id="updateBtn">OK</button>
+            <button type="reset">Reset</button>
+
+
+            <input type="text" id="datepicker" autocomplete="off"></input>
+
+        </form>
+
+        <form id="submitDate">
+            <input type="date" name="" id="startDate" value="2020-05-01">
+            <input type="date" name="" id="endDate" value="2020-05-05">
+            <button type="submit">Ok</button>
+        </form>
+
+
+        <canvas id="canvas" height="600"></canvas>
+    </div>
+    <br><br>
+</body>
+
+
+<script src="index.js"></script>
+<script src="canvas.js"></script>
+</html>

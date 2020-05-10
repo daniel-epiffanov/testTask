@@ -1,0 +1,27 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    font-size: 16px;
+}
+
+.container, .container > form{
+    width: 85vw;
+    /* min-height: 100vh; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin: 0 auto;
+}
+
+#canvas{
+    background: rgba(240, 239, 239, 0.438);
+    max-width: 1000px;
+    /* width: 850px;
+    height: 500px;
+    color: tomato;
+    background: turquoise; */
+}
