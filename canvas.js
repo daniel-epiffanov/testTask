@@ -398,17 +398,6 @@ const submitDataHandler = (e) => {
     let currecntMonth = results[0].date.month;
 
 
-    const scaleChangeTracker = (e) => {
-        if (e.date.year !== currecntYear) {
-            currecntYear++
-            scaleChanges.push({
-                index: counter + 1,
-                prvValue: e.date.year - 1,
-                Nxtvalue: e.date.year
-            })
-        }
-        counter++
-    }
     const resetAverageToZero = () => {
         average_degrees = [];
         average_wind = [];
@@ -468,12 +457,22 @@ const submitDataHandler = (e) => {
     else if(diff <= 80) {
 
         results.forEach((e, idx)=> {
+
             if(e.date.week == 6 || idx === results.length - 1) {
                 countAverageValues(e)
                 date.push(`${e.date.month}/${e.date.day}`)
                 resetAverageToZero();
 
-                scaleChangeTracker(e)
+
+                if (e.date.month !== currecntMonth) {
+                    currecntMonth++
+                    scaleChanges.push({
+                        index: counter,
+                        prvValue: month[e.date.month == 0 ? 11 : e.date.month - 1],
+                        Nxtvalue: month[e.date.month]
+                    })
+                }
+                counter++
             }
             else if(e.degree !== -999) pushAverageValue(e)
         })
@@ -483,7 +482,6 @@ const submitDataHandler = (e) => {
         canvasRender(degrees, date, wind, scaleChanges, defaultScale, countedMode, scale="Weeks")
 
     }
-    
  // ------------------------------------------------------------------------------- MONTHS -------
     else if(diff <= 400){
         results.forEach((e, idx)=> {
@@ -495,7 +493,15 @@ const submitDataHandler = (e) => {
                 //if(currecntMonth == 11) currecntMonth = 0
                 //else currecntMonth++
 
-                scaleChangeTracker(e)
+                if (e.date.year !== currecntYear) {
+                    currecntYear++
+                    scaleChanges.push({
+                        index: counter + 1,
+                        prvValue: e.date.year - 1,
+                        Nxtvalue: e.date.year
+                    })
+                }
+                counter++
             }
             else if(e.degree !== -999) pushAverageValue(e)
         })
