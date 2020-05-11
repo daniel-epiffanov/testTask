@@ -579,6 +579,6 @@ const submitDataHandler = (e) => {
 
  document.querySelector('#submitDate').addEventListener('submit', submitDataHandler)
 
-window.addEventListener('resize', () => submitDataHandler )
+window.addEventListener('resize', submitDataHandler )
 
 window.onload = () => submitDataHandler()
