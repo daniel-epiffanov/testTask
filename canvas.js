@@ -51,8 +51,10 @@ const dataTransform = (par, wind, degrees) => {
 
 // left and right sidebar numbers
 const sideNumbersRange = (rangeArray, y_spaces) => {
-    let min = Math.min(...rangeArray) - 1
-    let max = Math.max(...rangeArray) + 1
+    let filtered = rangeArray.filter(e=> e !== -999)
+    console.log('filtered ',filtered)
+    let min = Math.min(...filtered) - 1
+    let max = Math.max(...filtered) + 1
     let positiveRange = parseInt( (Math.abs(max) / (y_spaces/2) ).toFixed(0) )
     let negativeRange = parseInt( (Math.abs(min) / (y_spaces/2) ).toFixed(0) )
 
@@ -392,7 +394,7 @@ const submitDataHandler = (e) => {
         })
     })
 
-    let currecntMonth = insertedDataArr[0].month;
+    let currecntMonth = results[0].date.month;
 
 
 // ----------------------------------------------------------------- DAYS --------------
@@ -402,7 +404,7 @@ const submitDataHandler = (e) => {
         results.forEach(e=> {
             degrees.push(e.degree)
             wind.push(e.wind)
-            date.push(`${e.date.month}/${e.date.day}`)
+            date.push(`${e.date.month + 1}/${e.date.day}`)
             weathertype.push(e.type)
 
             if (e.date.month !== currecntMonth) {
