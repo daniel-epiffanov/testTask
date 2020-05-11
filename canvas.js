@@ -98,7 +98,7 @@ if (document.querySelector('#mpers').checked == true)  wind = dataTransform("win
 
 //console.log('wind, degrees ', wind, degrees)
 
-let get_Y_position = (el, forWhat, forWhatArr) => {
+let get_Y_position = (el, forWhatArr) => {
     let rangeArr = sideNumbersRange(forWhatArr, y_spaces);
     let _closestNumber = closestNumber(el, rangeArr);
     let indexOfClosest = rangeArr.indexOf(_closestNumber)
@@ -112,8 +112,7 @@ let get_Y_position = (el, forWhat, forWhatArr) => {
         return space * percentInLongInterval
     }
 
-    if (_closestNumber == el && forWhat == "degreePoints") return (Math.abs(bottomGap)+yPx) * -1
-    else if (_closestNumber == el && forWhat == "windPoints") return bottomGap-yPx
+    if (_closestNumber == el) return bottomGap-yPx
 
     else if (el > _closestNumber) return bottomGap - yPx - increment(indexOfClosest+1)
     else if (el < _closestNumber) return bottomGap - yPx - increment(indexOfClosest-1)
@@ -223,7 +222,7 @@ if (scaleChanges && scaleChanges.length !== 0) {
     ctx.fillText(defaultScale, canvas.width / 2 - 40, bottomGap + 70);
 }
 
-// Dealing with degrees and wind point (Y) Rendering Data
+// Dealing with degrees and wind point (Y) Rendering Data -----------------
 // wind points
 degrees.forEach((x, i)=> {  // wind triangles
     ctx.beginPath() 
@@ -231,11 +230,14 @@ degrees.forEach((x, i)=> {  // wind triangles
     ctx.lineWidth = "1"
 
     if(degrees[i] !== -10){
-        ctx.fillRect(leftGap+leftGap / 2 + intervals() * i - (intervals() / 8 / 2), -verLinesHeight/2 - space, intervals() / 8, (get_Y_position(wind[i], 'windPoints', wind) - bottomGap) + verLinesHeight/2 - space )
-        if(wind[i] == 0) ctx.fillRect(leftGap+leftGap / 2 + intervals() * i - (intervals() / 8 / 2), -verLinesHeight/2 - space, intervals() / 8, (get_Y_position(wind[i], 'windPoints', wind) - bottomGap) + verLinesHeight/2 - space - 10 )
+        ctx.fillRect(leftGap+leftGap / 2 + intervals() * i - (intervals() / 8 / 2), -verLinesHeight/2 - space, intervals() / 8, (get_Y_position(wind[i], wind) - bottomGap) + verLinesHeight/2 - space )
+        if(wind[i] == 0) ctx.fillRect(leftGap+leftGap / 2 + intervals() * i - (intervals() / 8 / 2), -verLinesHeight/2 - space, intervals() / 8, (get_Y_position(wind[i], wind) - bottomGap) + verLinesHeight/2 - space - 10 )
         ctx.stroke();
         ctx.fill();
         ctx.closePath();
+        ctx.fillStyle = "rgba(53, 53, 53, 1)"
+        ctx.font="1.2em Arial"
+        ctx.fillText(wind[i], leftGap+leftGap / 2 + intervals() * i - (intervals() / 8 / 2), -verLinesHeight/2 - space +25);
     }
 })
 
@@ -250,18 +252,21 @@ degrees.forEach((x, i)=> {
         ctx.font = "1.3rem Arial"
         ctx.fillText('N/D', leftGap+leftGap / 2 + intervals() * i - 15, -verLinesHeight-20);
     }else{
-        ctx.arc(leftGap+leftGap / 2 + intervals() * i, get_Y_position(degrees[i], "degreePoints", degrees), 10, 0, 2 * Math.PI);
+        ctx.arc(leftGap+leftGap / 2 + intervals() * i, get_Y_position(degrees[i], degrees), 10, 0, 2 * Math.PI);
         ctx.stroke();
         ctx.fill();
         ctx.closePath();
+        //ctx.fillStyle = "white"
+        ctx.font="1.5em Arial"
+        ctx.fillText(degrees[i], leftGap+leftGap / 2 + intervals() * i + 5, get_Y_position(degrees[i], degrees) -15);
         ctx.drawImage(weatherTypeDOM[weatherType[i]], 100 + i * intervals(), -verLinesHeight - 50, 40, 40);
 
         ctx.beginPath()  // Points
         ctx.fillStyle = "rgba(53, 53, 53, 0.7)"
         ctx.lineWidth = "7"
-        ctx.moveTo(leftGap+leftGap / 2 + intervals() * i, get_Y_position(degrees[i], "degreePoints", degrees));
+        ctx.moveTo(leftGap+leftGap / 2 + intervals() * i, get_Y_position(degrees[i], degrees));
         if(degrees[i+1] !== -10){
-            ctx.lineTo(leftGap+leftGap / 2 + intervals() * (i+1), get_Y_position(degrees[i+1], "degreePoints", degrees))
+            ctx.lineTo(leftGap+leftGap / 2 + intervals() * (i+1), get_Y_position(degrees[i+1], degrees))
         } else{
             //ctx.lineTo(leftGap*2 + intervals() * (i+2), points_position(arr[i+2]))
         }
@@ -433,8 +438,8 @@ const submitDataHandler = (e) => {
                     avW = average_wind.reduce( (a,b) => a+b ) / average_degrees.length
                     console.log('avW ',avW)
 
-                    degrees.push(av)
-                    wind.push(avW)
+                    degrees.push(av.toFixed(1))
+                    wind.push(avW.toFixed(1))
                     countedMode.push(countMode(arrMode)[0])
                 } else {
                     degrees.push(-10)
@@ -483,8 +488,8 @@ const submitDataHandler = (e) => {
                 if(average_degrees.length !== 0) {
                     av = average_degrees.reduce( (a,b) => a+b ) / average_degrees.length
                     avW = average_wind.reduce( (a,b) => a+b ) / average_degrees.length
-                    degrees.push(av)
-                    wind.push(avW)
+                    degrees.push(av.toFixed(1))
+                    wind.push(avW.toFixed(1))
                     countedMode.push(countMode(arrMode)[0])
                 } else {
                     degrees.push(-10)
@@ -541,8 +546,8 @@ const submitDataHandler = (e) => {
                 if(average_degrees.length !== 0) {
                     av = average_degrees.reduce( (a,b) => a+b ) / average_degrees.length
                     avW = average_wind.reduce( (a,b) => a+b ) / average_degrees.length
-                    degrees.push(av)
-                    wind.push(avW)
+                    degrees.push(av.toFixed(1))
+                    wind.push(avW.toFixed(1))
                     countedMode.push(countMode(arrMode)[0])
                 } else {
                     degrees.push(-10)
@@ -575,4 +580,5 @@ const submitDataHandler = (e) => {
  document.querySelector('#submitDate').addEventListener('submit', submitDataHandler)
 
 window.addEventListener('resize', () => submitDataHandler )
-window.onload = submitDataHandler();
+
+window.onload = () => submitDataHandler()
