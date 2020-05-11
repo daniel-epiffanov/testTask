@@ -395,9 +395,24 @@ const submitDataHandler = (e) => {
         })
     })
 
-    let currecntMonth = results[0].date.month - 1;
+    let currecntMonth = results[0].date.month;
 
 
+    const scaleChangeTracker = (e) => {
+        if (e.date.year !== currecntYear) {
+            currecntYear++
+            scaleChanges.push({
+                index: counter + 1,
+                prvValue: e.date.year - 1,
+                Nxtvalue: e.date.year
+            })
+        }
+        counter++
+    }
+    const resetAverageToZero = () => {
+        average_degrees = [];
+        average_wind = [];
+    }
     const pushAverageValue = (e) => {
         average_degrees.push( e.degree)
         average_wind.push(e.wind)
@@ -453,23 +468,12 @@ const submitDataHandler = (e) => {
     else if(diff <= 80) {
 
         results.forEach((e, idx)=> {
-
             if(e.date.week == 6 || idx === results.length - 1) {
                 countAverageValues(e)
                 date.push(`${e.date.month}/${e.date.day}`)
-                average_degrees = [];
-                average_wind = [];
+                resetAverageToZero();
 
-
-                if (e.date.month !== currecntMonth) {
-                    currecntMonth++
-                    scaleChanges.push({
-                        index: counter,
-                        prvValue: month[e.date.month == 0 ? 11 : e.date.month - 1],
-                        Nxtvalue: month[e.date.month]
-                    })
-                }
-                counter++
+                scaleChangeTracker(e)
             }
             else if(e.degree !== -999) pushAverageValue(e)
         })
@@ -479,30 +483,19 @@ const submitDataHandler = (e) => {
         canvasRender(degrees, date, wind, scaleChanges, defaultScale, countedMode, scale="Weeks")
 
     }
+    
  // ------------------------------------------------------------------------------- MONTHS -------
     else if(diff <= 400){
         results.forEach((e, idx)=> {
             if(e.date.month !== currecntMonth || idx === results.length - 1) {
                 countAverageValues(e)
                 date.push(`${month[currecntMonth]}`)
-                console.log('currecntMonth', currecntMonth)
-                average_degrees = [];
-                average_wind = [];
+                resetAverageToZero();
+                currecntMonth = currecntMonth == 11? 0 : currecntMonth + 1
+                //if(currecntMonth == 11) currecntMonth = 0
+                //else currecntMonth++
 
-                //currecntMonth++
-                if(currecntMonth == 11) currecntMonth = 0
-                else currecntMonth++
-
-
-                if (e.date.year !== currecntYear) {
-                    currecntYear++
-                    scaleChanges.push({
-                        index: counter + 1,
-                        prvValue: e.date.year - 1,
-                        Nxtvalue: e.date.year
-                    })
-                }
-                counter++
+                scaleChangeTracker(e)
             }
             else if(e.degree !== -999) pushAverageValue(e)
         })
@@ -511,7 +504,7 @@ const submitDataHandler = (e) => {
 
         canvasRender(degrees, date, wind, scaleChanges, defaultScale, countedMode, scale="Months")
 
-        console.log(date)
+        //console.log(date)
 
     }
 
@@ -521,18 +514,16 @@ const submitDataHandler = (e) => {
             if(e.date.year !== currecntYear || idx === results.length - 1) {
                 countAverageValues(e)
                 date.push(`${idx === results.length - 1 ? e.date.year : e.date.year - 1}`)
-                average_degrees = [];
-                average_wind = [];
+                resetAverageToZero()
                 currecntYear++
             }
             else if(e.degree !== -999) pushAverageValue(e)
         })
 
-        let defaultScale = 'yearMode';
+        canvasRender(degrees, date, wind, scaleChanges = [], defaultScale='yearMode',
+        countedMode, scale="Years")
 
-        canvasRender(degrees, date, wind, scaleChanges = [], defaultScale, countedMode, scale="Years")
-
-        console.log(results)
+        //console.log(results)
 
     }
 }
