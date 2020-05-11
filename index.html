@@ -6,83 +6,85 @@
     <link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon">
     <title>Weather SPA</title>
     <link rel="stylesheet" href="index.css">
-    <!-- <link rel="stylesheet" href="slider.css"> -->
 </head>
 <body>
     <div class="container">
-        <form action="degree">
-            <div>
-                <label for="degree">Degree (Celsius):</label>
-                <input type="number" name="degree" required
-                id="degree" placeholder="type degree" />
-            </div>
+        <form id="saveForm">
             
             <div>
-                <input type="radio" value="calm">Calm &lt;1km/h </input>
-                <input type="radio" value="calm">Light air 1-5 km/h</input>
-                <input type="radio" value="calm">Light 6-11 km/h</input>
-                <input type="radio" value="calm">Gentle 12-19 km/h</input>
-                <input type="radio" value="calm">Moderate 20-28 km/h</input>
-                <input type="radio" value="calm">Fresh 29-38 km/h</input>
-                <input type="radio" value="calm">Strong 38-49 km/h</input>
-                <input type="radio" value="calm">Gale 50-74 km/h</input>
-                <input type="radio" value="calm">Strong Gale 75-88 km/h</input>
-                <input type="radio" value="calm">Storm 89-102 km/h</input>
-                <input type="radio" value="calm">Violet Storm 103-117 km/h</input>
-                <input type="radio" value="calm">Hurricane Force &ge;118 km/h</input>
+                <label for="degree">Degree (Celsius):</label> <br>
+                <input type="number" name="degree" required
+                id="degree" placeholder="degree" value="1"/>
             </div>
+
             <div class="slidecontainer">
                 <label for="wind">Wind km/h:</label>
                 <input type="range" min="0" max="118"
                  value="5" class="slider" id="wind"
-                 name="wind" />
+                 name="wind" onmousemove="windValue(this.value)"/>
+                 <div id="windValue"><h2>5 km/h</h2></div>
             </div>
 
             <div>
                 <label for="">Date:</label>
-                <input type="date" />
+                <input type="date" id="date" value="2020-05-05" class="date" />
             </div>
 
             <div>
-                <label for="">Precipation:</label>
-                <select name="" id="">
-                    <option value="rain">No precipation</option>
+                <label for="weatherType">Type:</label>
+                <select name="weatherType" id="weatherType">
+                    <option value="sunny">Sunny</option>
+                    <option value="cloudy">Cloudy</option>
 
-                    <option value="rain">Sunny</option>
-                    <option value="rain">Partly sunny</option>
-                    <option value="rain">Cloudy</option>
-
-                    <option value="rain">Short rain</option>
-                    <option value="rain">Little rain</option>
                     <option value="rain">Rain</option>
-                    <option  ption value="rain">Heavy rain</option>
+                    <option  ption value="heavy_rain">Heavy rain</option>
 
-                    <option value="rain">Storm</option>
-                    <option value="rain">Thunder storm</option>
+                    <option value="thunderstorm">Thunderstorm</option>
 
-                    <option value="rain">Snow</option>
-                    <option value="rain">Sleet</option>
-                    <option value="rain">Hail</option>
+                    <option value="snow">Snow</option>
+                    <option value="hail">Hail</option>
                 </select>
             </div>
-            
-            
-            <button type="submit" id="updateBtn">OK</button>
-            <button type="reset">Reset</button>
-
-
-            <input type="text" id="datepicker" autocomplete="off"></input>
-
+            <div class="row">
+                <button type="submit">Save</button>
+                <button type="reset">Reset</button>
+            </div>
         </form>
+        
+        
+        <form id="submitDate" href="#canvas">
+            <h1>Choose a date</h1> <br>
+            <div class="row">
+                <input type="date" name="startDate" class="date" id="startDate" value="2020-05-01">
+                <input type="date" name="endDate" class="date" id="endDate" value="2020-05-05">
+            </div>
+            <div class="row">
+                <div>
+                    <label class="" for="fahrenheit">Fahrenheit</label>
+                    <input type="checkbox" id="fahrenheit" name="fahrenheit" value="fahrenheit">
+                </div>
+                <div>
+                    <label class="" for="mpers">Wind m/s</label>
+                    <input type="checkbox" id="mpers" name="mpers" value="mpers">
+                </div>
+            </div>
 
-        <form id="submitDate">
-            <input type="date" name="" id="startDate" value="2020-05-01">
-            <input type="date" name="" id="endDate" value="2020-05-05">
-            <button type="submit">Ok</button>
+            <button type="submit">Show</button>
         </form>
+        <div id="dateInformation"></div>
 
 
-        <canvas id="canvas" height="600"></canvas>
+        <canvas id="canvas" height="650"></canvas>
+
+        <div style="display:none;">
+            <img id="sunny" src="img/sunny.png">
+            <img id="cloudy" src="img/cloudy.png">
+            <img id="rain" src="img/rain.png">
+            <img id="heavy_rain" src="img/heavy_rain.png">
+            <img id="thunderstorm" src="img/thunderstorm.png">
+            <img id="snow" src="img/snow.png">
+            <img id="hail" src="img/hail.png">
+        </div>
     </div>
     <br><br>
 </body>
