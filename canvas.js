@@ -68,11 +68,14 @@ const sideNumbersRange = (rangeArray, y_spaces) => {
         rg = rg - negativeRange;
         newRangeArr.unshift(parseInt(rg))
     }
+    newRangeArr[0] = newRangeArr[0] > min ? min.toFixed(0): newRangeArr[0]
+    console.log('newRangeArr[0]', newRangeArr[0])
     rg = 0;
     for (let i = 0; i < middle; i++) {
         rg = rg + positiveRange;
         newRangeArr.push(parseInt(rg))
     }
+    newRangeArr[newRangeArr.length-1] = newRangeArr.slice(-1)[0] < max ? max.toFixed(0): newRangeArr.slice(-1)[0]
 
     return newRangeArr
 }
@@ -95,13 +98,13 @@ if (document.querySelector('#mpers').checked == true)  wind = dataTransform("win
 
 //console.log('wind, degrees ', wind, degrees)
 
-let get_Y_position = (el, forWhat) => {
-    let rangeArr = sideNumbersRange(degrees, y_spaces);
+let get_Y_position = (el, forWhat, forWhatArr) => {
+    let rangeArr = sideNumbersRange(forWhatArr, y_spaces);
     let _closestNumber = closestNumber(el, rangeArr);
     let indexOfClosest = rangeArr.indexOf(_closestNumber)
     let yPx = rangeArr.indexOf(_closestNumber) * space
 
-    let increment = (nextValue) => {
+    let increment = (nextValue) => { // how much should we increment when we get to the closest number
         let shortInterval = Math.abs(el - _closestNumber) // interval between closest numbers and element
         let longInterval = rangeArr[nextValue] - _closestNumber; // closest value minus next value
         let percentInLongInterval = shortInterval / longInterval;
@@ -112,21 +115,20 @@ let get_Y_position = (el, forWhat) => {
     if (_closestNumber == el && forWhat == "degreePoints") return (Math.abs(bottomGap)+yPx) * -1
     else if (_closestNumber == el && forWhat == "windPoints") return bottomGap-yPx
 
-    else if (el > _closestNumber) return -(Math.abs(bottomGap)+yPx + increment(indexOfClosest+1) )
-    else if (el < _closestNumber) return -(Math.abs(bottomGap)+yPx +  increment(indexOfClosest-1) )
+    else if (el > _closestNumber) return bottomGap - yPx - increment(indexOfClosest+1)
+    else if (el < _closestNumber) return bottomGap - yPx - increment(indexOfClosest-1)
 
 }
 
 
 // CANVAS -------------------------------------------------
-
 let ctx = canvas.getContext('2d');
 ctx.translate(0, canvas.height);
 
-ctx.font = '3rem Arial' // top textline
-ctx.fillText(scale, canvas.width / 2 - 55, -verLinesHeight - 70)
+// main titles
+ctx.font = '3rem Arial'
+ctx.fillText(scale, canvas.width / 2 - 55, -verLinesHeight - 70) // top textline
 
-//ctx.rotate(-Math.PI/2);
 ctx.rotate(-Math.PI / 2);
 ctx.font = '1.5rem Arial'
 ctx.fillText(`Degrees ${!fahrenheit ? 'C': 'F'}`, canvas.height / 2 - 100, 30) // left textline
@@ -137,29 +139,32 @@ ctx.fillText(`Wind ${!mpers ? 'km/h': 'm/s'}`, -canvas.height / 2 - 50, -canvas.
 ctx.rotate(-Math.PI / 2);
 
 
-ctx.beginPath(); // Horizontal lines (Y)
+// Horizontal lines and numbers (dealing with Y)
+ctx.beginPath();
 ctx.strokeStyle = "#E9DADA";
 ctx.font = '1rem Arial';
 
-sideNumbersRange(degrees, y_spaces).forEach((x, i) => { // Drawing horizontal lines (Y) and numbers
+sideNumbersRange(degrees, y_spaces).forEach((x, i) => { // Drawing horizontal lines (Y) and numbers on the left
     ctx.moveTo(leftGap, bottomGap - i * space );
     ctx.lineTo(horLinesWidth + leftGap, bottomGap - i * space )
     ctx.stroke()
     ctx.fillText(x, leftGap - 30, bottomGap - i * space  + 4);
 });
 
-sideNumbersRange(wind, y_spaces).forEach((x, i) => { // Drawing horizontal lines (Y) and numbers
+sideNumbersRange(wind, y_spaces).forEach((x, i) => { // numbers on the right
     ctx.fillStyle = "rgba(193, 103, 27, 0.7)"
     ctx.fillText(x, canvas.width - rightGap + 20, bottomGap - i * space  + 4);
 });
 
+ctx.beginPath();
 ctx.strokeStyle = "rgb(97, 47, 5)"
 ctx.lineWidth = "3"
-ctx.beginPath();
-ctx.moveTo(leftGap, -verLinesHeight / 2 - space );
+ctx.moveTo(leftGap, -verLinesHeight / 2 - space ); // bold line for 0 in the center (Y)
 ctx.lineTo(horLinesWidth + leftGap, -verLinesHeight / 2 - space )
 ctx.stroke()
 
+
+// Vertical lines (Dealing with X)
 ctx.lineWidth = "1"
 ctx.beginPath();  // vertical lines (X)
 if(degrees[0] !== -10) ctx.strokeStyle = "#A27E7E"
@@ -190,7 +195,7 @@ ctx.stroke()
 ctx.fillText(date.slice(-1)[0], canvas.width - rightGap  - rightGap / 2 - 20, bottomGap + 30); // .slice(0, -5)
 
 
-// Scale line
+// Dealing with cale line on the bottom
 ctx.beginPath()
 ctx.fillStyle = "rgba(53, 53, 53, 0.7)"
 ctx.strokeStyle = "rgba(53, 53, 53, 0.7)"
@@ -218,22 +223,23 @@ if (scaleChanges && scaleChanges.length !== 0) {
     ctx.fillText(defaultScale, canvas.width / 2 - 40, bottomGap + 70);
 }
 
+// Dealing with degrees and wind point (Y) Rendering Data
+// wind points
 degrees.forEach((x, i)=> {  // wind triangles
     ctx.beginPath() 
     ctx.fillStyle = "rgba(193, 103, 27, 0.56)"
     ctx.lineWidth = "1"
 
     if(degrees[i] !== -10){
-        ctx.fillRect(leftGap+leftGap / 2 + intervals() * i - (intervals() / 8 / 2), -verLinesHeight/2 - space, intervals() / 8, (get_Y_position(wind[i], 'windPoints') - bottomGap) + verLinesHeight/2 - space )
-        if(wind[i] == 0) ctx.fillRect(leftGap+leftGap / 2 + intervals() * i - (intervals() / 8 / 2), -verLinesHeight/2 - space, intervals() / 8, (get_Y_position(wind[i], 'windPoints') - bottomGap) + verLinesHeight/2 - space - 10 )
+        ctx.fillRect(leftGap+leftGap / 2 + intervals() * i - (intervals() / 8 / 2), -verLinesHeight/2 - space, intervals() / 8, (get_Y_position(wind[i], 'windPoints', wind) - bottomGap) + verLinesHeight/2 - space )
+        if(wind[i] == 0) ctx.fillRect(leftGap+leftGap / 2 + intervals() * i - (intervals() / 8 / 2), -verLinesHeight/2 - space, intervals() / 8, (get_Y_position(wind[i], 'windPoints', wind) - bottomGap) + verLinesHeight/2 - space - 10 )
         ctx.stroke();
         ctx.fill();
         ctx.closePath();
     }
 })
 
-
-// Points --------------
+// Degrees Points
 ctx.strokeStyle = "rgba(53, 53, 53, 0.8)"
 degrees.forEach((x, i)=> {
     ctx.beginPath() 
@@ -244,7 +250,7 @@ degrees.forEach((x, i)=> {
         ctx.font = "1.3rem Arial"
         ctx.fillText('N/D', leftGap+leftGap / 2 + intervals() * i - 15, -verLinesHeight-20);
     }else{
-        ctx.arc(leftGap+leftGap / 2 + intervals() * i, get_Y_position(degrees[i], "degreePoints"), 10, 0, 2 * Math.PI);
+        ctx.arc(leftGap+leftGap / 2 + intervals() * i, get_Y_position(degrees[i], "degreePoints", degrees), 10, 0, 2 * Math.PI);
         ctx.stroke();
         ctx.fill();
         ctx.closePath();
@@ -253,66 +259,97 @@ degrees.forEach((x, i)=> {
         ctx.beginPath()  // Points
         ctx.fillStyle = "rgba(53, 53, 53, 0.7)"
         ctx.lineWidth = "7"
-        ctx.moveTo(leftGap+leftGap / 2 + intervals() * i, get_Y_position(degrees[i], "degreePoints"));
+        ctx.moveTo(leftGap+leftGap / 2 + intervals() * i, get_Y_position(degrees[i], "degreePoints", degrees));
         if(degrees[i+1] !== -10){
-            ctx.lineTo(leftGap+leftGap / 2 + intervals() * (i+1), get_Y_position(degrees[i+1], "degreePoints"))
+            ctx.lineTo(leftGap+leftGap / 2 + intervals() * (i+1), get_Y_position(degrees[i+1], "degreePoints", degrees))
         } else{
             //ctx.lineTo(leftGap*2 + intervals() * (i+2), points_position(arr[i+2]))
         }
         ctx.stroke();
+
+        // canvas.addEventListener('mousemove', e=>{
+        //     //submitDataHandler()
+                console.log('mousemove')
+        // })
     }
 })
 
-
 }
+// END OF CANVAS RENDRING FUNCTION
 
 
-// Canvas Rendering  ------------------------------------
+
+// Dealing with canvas Rendering
 const canvasRender = (degrees, date, wind, scaleChanges, defaultScale, weathertype, scale) => {
     canvas.width = window.innerWidth - window.innerWidth * 0.2;
 
     can(degrees, date, wind, scaleChanges, defaultScale, weathertype, scale);
 }
 
- document.querySelector('#submitDate').addEventListener('submit', e=> {
-    e.preventDefault();
-    let startDate = new Date(document.querySelector('#startDate').value)
-    let endDate = new Date(document.querySelector('#endDate').value)
-    data = getData();
-
-    document.querySelector('#dateInformation').innerHTML = `<h2>${startDate.toLocaleDateString()} - 
-    ${endDate.toLocaleDateString()}</h2>`
-
-    let stDate = {
-        year: startDate.getFullYear(),
-        month: startDate.getMonth(),
-        day: startDate.getDate()
+// returns mode numbers of sent array
+const countMode = (numbers) => {
+    var modes = [], count = [], i, number, maxIndex = 0;
+ 
+    for (i = 0; i < numbers.length; i += 1) {
+        number = numbers[i];
+        count[number] = (count[number] || 0) + 1;
+        if (count[number] > maxIndex) {
+            maxIndex = count[number];
+        }
     }
-    let enDate = {
-        year: endDate.getFullYear(),
-        month: endDate.getMonth(),
-        day: endDate.getDate()
-    }
-    let startDateFull = (stDate.year  * 12 * 30) + (stDate.month * 30) + stDate.day;
-    let enDateFull = (enDate.year  * 12 * 30 ) + (enDate.month * 30 ) + enDate.day;
+ 
+    for (i in count)
+        if (count.hasOwnProperty(i)) {
+            if (count[i] === maxIndex) {
+                modes.push(Number(i));
+            }
+        }
+ 
+    return modes;
+}
 
-    let diff = enDateFull - startDateFull + 1
+// Calculating scale
+const submitDataHandler = (e) => {
+    if(e) e.preventDefault();
+    let getDate = {
+        start:new Date(document.querySelector('#startDate').value),
+        end: new Date(document.querySelector('#endDate').value)
+    }
+    let startDate = {
+        fullValue: getDate.start,
+        year: getDate.start.getFullYear(),
+        month: getDate.start.getMonth(),
+        day: getDate.start.getDate(),
+        week: getDate.start.getDay()
+    }
+    let endDate = {
+        fullValue: getDate.end,
+        year: getDate.end.getFullYear(),
+        month: getDate.end.getMonth(),
+        day: getDate.end.getDate(),
+        week: getDate.end.getDay()
+    }
+    data = getData(); // update new values from localStorage? returns object
+
+    document.querySelector('#dateInformation').innerHTML =`<h2>${startDate.fullValue.toLocaleDateString()}
+     - ${endDate.fullValue.toLocaleDateString()}</h2>` // shows date range
+
+
+    let startDateFull_inDays = (startDate.year  * 12 * 30) + (startDate.month * 30) + startDate.day;
+    let enDateFull_inDays = (endDate.year  * 12 * 30 ) + (endDate.month * 30 ) + endDate.day;
+
+    let diff = enDateFull_inDays - startDateFull_inDays + 1
 
     console.log( diff)
 
-    let insertedDataArr = [{
-        year: startDate.getFullYear(),
-        month: startDate.getMonth(),
-        day: startDate.getDate(),
-        week: startDate.getDay()
-    }]
+    let insertedDataArr = [startDate]
 
     let degrees = [];
     let wind = [];
     let date = [];
     let scaleChanges = [];
     let defaultScale;
-    let nextDay = startDate;
+    let nextDay = startDate.fullValue;
     let results = [];
     let counter = 0;
     let average_degrees = [];
@@ -321,6 +358,7 @@ const canvasRender = (degrees, date, wind, scaleChanges, defaultScale, weatherty
     let weathertype = [];
     let countedMode = [];
 
+    // get every inserted day
     for (let i = 1; i < diff; i++) {
         nextDay = new Date(nextDay.getTime() + (24 * 60 * 60 * 1000))
 
@@ -332,6 +370,7 @@ const canvasRender = (degrees, date, wind, scaleChanges, defaultScale, weatherty
         })
     }
 
+    // check which data we have in database. It will be inserted in results
     insertedDataArr.forEach((el, i) => {
         let foundSmth = false
         data.forEach((e,i) => {
@@ -347,28 +386,8 @@ const canvasRender = (degrees, date, wind, scaleChanges, defaultScale, weatherty
         })
     })
 
-    let currecntMonth = results[0].date.month;
+    let currecntMonth = insertedDataArr[0].month;
 
-    const countMode = (numbers) => {
-        var modes = [], count = [], i, number, maxIndex = 0;
-     
-        for (i = 0; i < numbers.length; i += 1) {
-            number = numbers[i];
-            count[number] = (count[number] || 0) + 1;
-            if (count[number] > maxIndex) {
-                maxIndex = count[number];
-            }
-        }
-     
-        for (i in count)
-            if (count.hasOwnProperty(i)) {
-                if (count[i] === maxIndex) {
-                    modes.push(Number(i));
-                }
-            }
-     
-        return modes;
-    }
 
 // ----------------------------------------------------------------- DAYS --------------
 
@@ -398,11 +417,11 @@ const canvasRender = (degrees, date, wind, scaleChanges, defaultScale, weatherty
     }
 
     // --------------------------------------------------------------- WEEKS ----------------------
-    else if(diff <= 80){
+    else if(diff <= 80) {
 
         results.forEach((e, idx)=> {
 
-            if(e.date.week == 6) {
+            if(e.date.week == 6 || idx === results.length - 1) {
                 if(e.degree !== -10) {
                     average_degrees.push( e.degree)
                     average_wind.push(e.wind)
@@ -512,7 +531,7 @@ const canvasRender = (degrees, date, wind, scaleChanges, defaultScale, weatherty
 
         let yearNumber = results[0].date.year;
         results.forEach((e, idx)=> {
-            if(e.date.year !== yearNumber) { //|| idx === results.length - 1
+            if(e.date.year !== yearNumber || idx === results.length - 1) { //|| idx === results.length - 1
                 if(e.degree !== -10) {
                     average_degrees.push( e.degree)
                     average_wind.push(e.wind)
@@ -551,7 +570,9 @@ const canvasRender = (degrees, date, wind, scaleChanges, defaultScale, weatherty
         console.log(results)
 
     }
- })
+}
 
-window.addEventListener('resize', () => canvasRender(degrees = [1,3], date=['05/01/2020', '05/02/2020'] ) )
-window.onload = canvasRender(degrees = [1,3], date=['05/01/2020', '05/02/2020']);
+ document.querySelector('#submitDate').addEventListener('submit', submitDataHandler)
+
+window.addEventListener('resize', () => submitDataHandler )
+window.onload = submitDataHandler();
