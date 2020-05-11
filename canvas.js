@@ -352,20 +352,14 @@ const submitDataHandler = (e) => {
 
     let insertedDataArr = [startDate]
 
-    let degrees = [];
-    let wind = [];
-    let date = [];
-    let scaleChanges = [];
-    let defaultScale;
-    let nextDay = startDate.fullValue;
-    let results = [];
-    let counter = 0;
-    let average_degrees = [];
-    let average_wind = [];
-    let arrMode = [];
-    let weathertype = [];
-    let countedMode = [];
-    let currecntYear = insertedDataArr[0].year;
+    let degrees = [], wind = [], date = [], weathertype = []; // basic arrays to be sent to canvas
+    let scaleChanges = []; // traks if there is a scale change (day, month, year), returns index and value
+    let defaultScale; // is it year, month, day...
+    let nextDay = startDate.fullValue; // starting value
+    let results = []; // push array here if we have it in a localstorage
+
+    let countedMode = []; // here a counted mode is stored
+    
 
     // get every inserted day
     for (let i = 1; i < diff; i++) {
@@ -395,17 +389,21 @@ const submitDataHandler = (e) => {
         })
     })
 
+    let currecntYear = results[0].date.year;
     let currecntMonth = results[0].date.month;
 
 
+    let counter = 0;
+    let average_degrees = [], average_wind = [], average_weather_type = [] // counting average values
     const resetAverageToZero = () => {
         average_degrees = [];
         average_wind = [];
+        average_weather_type = []
     }
     const pushAverageValue = (e) => {
         average_degrees.push( e.degree)
         average_wind.push(e.wind)
-        arrMode.push(e.type)
+        average_weather_type.push(e.type)
     }
     const countAverageValues = (e) => {
         if(e.degree !== -999) pushAverageValue(e)
@@ -417,7 +415,7 @@ const submitDataHandler = (e) => {
 
             degrees.push(av.toFixed(1))
             wind.push(avW.toFixed(1))
-            countedMode.push(countMode(arrMode)[0])
+            countedMode.push(countMode(average_weather_type)[0])
         } else {
             degrees.push(-999)
             wind.push(-999)
