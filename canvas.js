@@ -35,8 +35,8 @@ const dataTransform = (par, wind, degrees) => {
     let newArr = [];
     if (par == "degrees"){
         degrees.forEach(e=> {
-            if(e !== -10) newArr.push( parseInt( ( (e * 9/5) + 32).toFixed(0) ) )
-            else newArr.push(-10)
+            if(e !== -999) newArr.push( parseInt( ( (e * 9/5) + 32).toFixed(0) ) )
+            else newArr.push(-999)
         })
         fahrenheit = true;
         return newArr
@@ -166,7 +166,7 @@ ctx.stroke()
 // Vertical lines (Dealing with X)
 ctx.lineWidth = "1"
 ctx.beginPath();  // vertical lines (X)
-if(degrees[0] !== -10) ctx.strokeStyle = "#A27E7E"
+if(degrees[0] !== -999) ctx.strokeStyle = "#A27E7E"
 else ctx.strokeStyle = "red"
 
 ctx.moveTo(leftGap +leftGap / 2, bottomGap); // first left vertical line (X)
@@ -176,7 +176,7 @@ ctx.fillText(date[0], leftGap +leftGap / 2 - 20, bottomGap + 30); //.slice(0,-5)
 
 for (let i = 1; i < x_spaces; i++) {
     ctx.beginPath()
-    if(degrees[i] !== -10) ctx.strokeStyle = "#A27E7E"
+    if(degrees[i] !== -999) ctx.strokeStyle = "#A27E7E"
     else ctx.strokeStyle = "red"
     ctx.moveTo(leftGap +leftGap / 2 + i * intervals() , bottomGap);
     ctx.lineTo(leftGap +leftGap / 2 + i * intervals(), -verLinesHeight)
@@ -186,7 +186,7 @@ for (let i = 1; i < x_spaces; i++) {
 }
 
 ctx.beginPath()
-    if(degrees.slice(-1)[0] !== -10) ctx.strokeStyle = "#A27E7E"
+    if(degrees.slice(-1)[0] !== -999) ctx.strokeStyle = "#A27E7E"
     else ctx.strokeStyle = "red"
 ctx.moveTo(canvas.width - rightGap  - rightGap / 2, bottomGap); // last right vertical line (X)
 ctx.lineTo(canvas.width - rightGap - rightGap / 2, -verLinesHeight)
@@ -229,7 +229,7 @@ degrees.forEach((x, i)=> {  // wind triangles
     ctx.fillStyle = "rgba(193, 103, 27, 0.56)"
     ctx.lineWidth = "1"
 
-    if(degrees[i] !== -10){
+    if(degrees[i] !== -999){
         ctx.fillRect(leftGap+leftGap / 2 + intervals() * i - (intervals() / 8 / 2), -verLinesHeight/2 - space, intervals() / 8, (get_Y_position(wind[i], wind) - bottomGap) + verLinesHeight/2 - space )
         if(wind[i] == 0) ctx.fillRect(leftGap+leftGap / 2 + intervals() * i - (intervals() / 8 / 2), -verLinesHeight/2 - space, intervals() / 8, (get_Y_position(wind[i], wind) - bottomGap) + verLinesHeight/2 - space - 10 )
         ctx.stroke();
@@ -247,7 +247,7 @@ degrees.forEach((x, i)=> {
     ctx.beginPath() 
     ctx.fillStyle = "rgba(53, 53, 53, 1)"
     ctx.lineWidth = "1"
-    if(degrees[i] == -10){
+    if(degrees[i] == -999){
         ctx.fillStyle = "red";
         ctx.font = "1.3rem Arial"
         ctx.fillText('N/D', leftGap+leftGap / 2 + intervals() * i - 15, -verLinesHeight-20);
@@ -265,7 +265,7 @@ degrees.forEach((x, i)=> {
         ctx.fillStyle = "rgba(53, 53, 53, 0.7)"
         ctx.lineWidth = "7"
         ctx.moveTo(leftGap+leftGap / 2 + intervals() * i, get_Y_position(degrees[i], degrees));
-        if(degrees[i+1] !== -10){
+        if(degrees[i+1] !== -999){
             ctx.lineTo(leftGap+leftGap / 2 + intervals() * (i+1), get_Y_position(degrees[i+1], degrees))
         } else{
             //ctx.lineTo(leftGap*2 + intervals() * (i+2), points_position(arr[i+2]))
@@ -385,8 +385,8 @@ const submitDataHandler = (e) => {
             }
         })
         if (!foundSmth) results.push({
-            degree: -10,
-            wind: 0,
+            degree: -999,
+            wind: -999,
             date: el
         })
     })
@@ -427,7 +427,7 @@ const submitDataHandler = (e) => {
         results.forEach((e, idx)=> {
 
             if(e.date.week == 6 || idx === results.length - 1) {
-                if(e.degree !== -10) {
+                if(e.degree !== -999) {
                     average_degrees.push( e.degree)
                     average_wind.push(e.wind)
                     arrMode.push(e.type)
@@ -442,8 +442,8 @@ const submitDataHandler = (e) => {
                     wind.push(avW.toFixed(1))
                     countedMode.push(countMode(arrMode)[0])
                 } else {
-                    degrees.push(-10)
-                    wind.push(0)
+                    degrees.push(-999)
+                    wind.push(-999)
                     countedMode.push(0)
                 }
                 date.push(`${e.date.month}/${e.date.day}`)
@@ -461,7 +461,7 @@ const submitDataHandler = (e) => {
                 }
                 counter++
             }
-            else if(e.degree !== -10) {
+            else if(e.degree !== -999) {
                 average_degrees.push(e.degree)
                 average_wind.push(e.wind)
                 arrMode.push(e.type)
@@ -479,7 +479,7 @@ const submitDataHandler = (e) => {
         let currecntYear = results[0].date.year;
         results.forEach((e, idx)=> {
             if(e.date.month !== currecntMonth || idx === results.length - 1) {
-                if(e.degree !== -10) {
+                if(e.degree !== -999) {
                     average_degrees.push( e.degree)
                     average_wind.push(e.wind)
                     arrMode.push(e.type)
@@ -492,8 +492,8 @@ const submitDataHandler = (e) => {
                     wind.push(avW.toFixed(1))
                     countedMode.push(countMode(arrMode)[0])
                 } else {
-                    degrees.push(-10)
-                    wind.push(0)
+                    degrees.push(-999)
+                    wind.push(-999)
                     countedMode.push(0)
                 }
                 date.push(`${month[currecntMonth]}`)
@@ -516,7 +516,7 @@ const submitDataHandler = (e) => {
                 }
                 counter++
             }
-            else if(e.degree !== -10) {
+            else if(e.degree !== -999) {
                 average_degrees.push(e.degree)
                 average_wind.push(e.wind)
                 arrMode.push(e.type)
@@ -537,7 +537,7 @@ const submitDataHandler = (e) => {
         let yearNumber = results[0].date.year;
         results.forEach((e, idx)=> {
             if(e.date.year !== yearNumber || idx === results.length - 1) { //|| idx === results.length - 1
-                if(e.degree !== -10) {
+                if(e.degree !== -999) {
                     average_degrees.push( e.degree)
                     average_wind.push(e.wind)
                     arrMode.push(e.type)
@@ -550,8 +550,8 @@ const submitDataHandler = (e) => {
                     wind.push(avW.toFixed(1))
                     countedMode.push(countMode(arrMode)[0])
                 } else {
-                    degrees.push(-10)
-                    wind.push(10)
+                    degrees.push(-999)
+                    wind.push(-999)
                     countedMode.push(0)
                 }
                 date.push(`${idx === results.length - 1 ? e.date.year : e.date.year - 1}`)
@@ -561,7 +561,7 @@ const submitDataHandler = (e) => {
                 //else yearNumber++
                 yearNumber++
             }
-            else if(e.degree !== -10) {
+            else if(e.degree !== -999) {
                 average_degrees.push(e.degree)
                 average_wind.push(e.wind)
                 arrMode.push(e.type)
