@@ -362,6 +362,7 @@ const submitDataHandler = (e) => {
     let arrMode = [];
     let weathertype = [];
     let countedMode = [];
+    let currecntYear = insertedDataArr[0].year;
 
     // get every inserted day
     for (let i = 1; i < diff; i++) {
@@ -475,8 +476,6 @@ const submitDataHandler = (e) => {
     }
  // ------------------------------------------------------------------------------- MONTHS -------
     else if(diff <= 400){
-
-        let currecntYear = results[0].date.year;
         results.forEach((e, idx)=> {
             if(e.date.month !== currecntMonth || idx === results.length - 1) {
                 if(e.degree !== -999) {
@@ -533,10 +532,8 @@ const submitDataHandler = (e) => {
 
 // ---------------------------------------------------------------------------------------- YEAR ----------------
     else if(diff > 400){
-
-        let yearNumber = results[0].date.year;
         results.forEach((e, idx)=> {
-            if(e.date.year !== yearNumber || idx === results.length - 1) { //|| idx === results.length - 1
+            if(e.date.year !== currecntYear || idx === results.length - 1) { //|| idx === results.length - 1
                 if(e.degree !== -999) {
                     average_degrees.push( e.degree)
                     average_wind.push(e.wind)
@@ -557,9 +554,7 @@ const submitDataHandler = (e) => {
                 date.push(`${idx === results.length - 1 ? e.date.year : e.date.year - 1}`)
                 average_degrees = [];
                 average_wind = [];
-                //if(yearNumber == 11) yearNumber = 0
-                //else yearNumber++
-                yearNumber++
+                currecntYear++
             }
             else if(e.degree !== -999) {
                 average_degrees.push(e.degree)
