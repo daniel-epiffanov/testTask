@@ -52,6 +52,7 @@ const dataTransform = (par, wind, degrees) => {
 // left and right sidebar numbers
 const sideNumbersRange = (rangeArray, y_spaces) => {
     let filtered = rangeArray.filter(e=> e !== -999)
+    filtered = filtered.length == 0 ? [-10,10] : filtered
     console.log('filtered ',filtered)
     let min = Math.min(...filtered) - 1
     let max = Math.max(...filtered) + 1
@@ -394,8 +395,31 @@ const submitDataHandler = (e) => {
         })
     })
 
-    let currecntMonth = results[0].date.month;
+    let currecntMonth = results[0].date.month - 1;
 
+
+    const pushAverageValue = (e) => {
+        average_degrees.push( e.degree)
+        average_wind.push(e.wind)
+        arrMode.push(e.type)
+    }
+    const countAverageValues = (e) => {
+        if(e.degree !== -999) pushAverageValue(e)
+        let av, avW;
+        if(average_degrees.length !== 0) {
+            av = average_degrees.reduce( (a,b) => a+b ) / average_degrees.length
+            avW = average_wind.reduce( (a,b) => a+b ) / average_degrees.length
+            console.log('avW ',avW)
+
+            degrees.push(av.toFixed(1))
+            wind.push(avW.toFixed(1))
+            countedMode.push(countMode(arrMode)[0])
+        } else {
+            degrees.push(-999)
+            wind.push(-999)
+            countedMode.push(0)
+        }
+    }
 
 // ----------------------------------------------------------------- DAYS --------------
 
@@ -424,31 +448,14 @@ const submitDataHandler = (e) => {
         canvasRender(degrees, date, wind, scaleChanges, defaultScale, weathertype, scale="Days")
     }
 
+
     // --------------------------------------------------------------- WEEKS ----------------------
     else if(diff <= 80) {
 
         results.forEach((e, idx)=> {
 
             if(e.date.week == 6 || idx === results.length - 1) {
-                if(e.degree !== -999) {
-                    average_degrees.push( e.degree)
-                    average_wind.push(e.wind)
-                    arrMode.push(e.type)
-                }
-                let av, avW;
-                if(average_degrees.length !== 0) {
-                    av = average_degrees.reduce( (a,b) => a+b ) / average_degrees.length
-                    avW = average_wind.reduce( (a,b) => a+b ) / average_degrees.length
-                    console.log('avW ',avW)
-
-                    degrees.push(av.toFixed(1))
-                    wind.push(avW.toFixed(1))
-                    countedMode.push(countMode(arrMode)[0])
-                } else {
-                    degrees.push(-999)
-                    wind.push(-999)
-                    countedMode.push(0)
-                }
+                countAverageValues(e)
                 date.push(`${e.date.month}/${e.date.day}`)
                 average_degrees = [];
                 average_wind = [];
@@ -464,11 +471,7 @@ const submitDataHandler = (e) => {
                 }
                 counter++
             }
-            else if(e.degree !== -999) {
-                average_degrees.push(e.degree)
-                average_wind.push(e.wind)
-                arrMode.push(e.type)
-            }
+            else if(e.degree !== -999) pushAverageValue(e)
         })
 
         defaultScale = month[currecntMonth]
@@ -480,23 +483,7 @@ const submitDataHandler = (e) => {
     else if(diff <= 400){
         results.forEach((e, idx)=> {
             if(e.date.month !== currecntMonth || idx === results.length - 1) {
-                if(e.degree !== -999) {
-                    average_degrees.push( e.degree)
-                    average_wind.push(e.wind)
-                    arrMode.push(e.type)
-                }
-                let av, avW;
-                if(average_degrees.length !== 0) {
-                    av = average_degrees.reduce( (a,b) => a+b ) / average_degrees.length
-                    avW = average_wind.reduce( (a,b) => a+b ) / average_degrees.length
-                    degrees.push(av.toFixed(1))
-                    wind.push(avW.toFixed(1))
-                    countedMode.push(countMode(arrMode)[0])
-                } else {
-                    degrees.push(-999)
-                    wind.push(-999)
-                    countedMode.push(0)
-                }
+                countAverageValues(e)
                 date.push(`${month[currecntMonth]}`)
                 console.log('currecntMonth', currecntMonth)
                 average_degrees = [];
@@ -517,11 +504,7 @@ const submitDataHandler = (e) => {
                 }
                 counter++
             }
-            else if(e.degree !== -999) {
-                average_degrees.push(e.degree)
-                average_wind.push(e.wind)
-                arrMode.push(e.type)
-            }
+            else if(e.degree !== -999) pushAverageValue(e)
         })
 
         defaultScale = currecntYear
@@ -535,34 +518,14 @@ const submitDataHandler = (e) => {
 // ---------------------------------------------------------------------------------------- YEAR ----------------
     else if(diff > 400){
         results.forEach((e, idx)=> {
-            if(e.date.year !== currecntYear || idx === results.length - 1) { //|| idx === results.length - 1
-                if(e.degree !== -999) {
-                    average_degrees.push( e.degree)
-                    average_wind.push(e.wind)
-                    arrMode.push(e.type)
-                }
-                let av, avW;
-                if(average_degrees.length !== 0) {
-                    av = average_degrees.reduce( (a,b) => a+b ) / average_degrees.length
-                    avW = average_wind.reduce( (a,b) => a+b ) / average_degrees.length
-                    degrees.push(av.toFixed(1))
-                    wind.push(avW.toFixed(1))
-                    countedMode.push(countMode(arrMode)[0])
-                } else {
-                    degrees.push(-999)
-                    wind.push(-999)
-                    countedMode.push(0)
-                }
+            if(e.date.year !== currecntYear || idx === results.length - 1) {
+                countAverageValues(e)
                 date.push(`${idx === results.length - 1 ? e.date.year : e.date.year - 1}`)
                 average_degrees = [];
                 average_wind = [];
                 currecntYear++
             }
-            else if(e.degree !== -999) {
-                average_degrees.push(e.degree)
-                average_wind.push(e.wind)
-                arrMode.push(e.type)
-            }
+            else if(e.degree !== -999) pushAverageValue(e)
         })
 
         let defaultScale = 'yearMode';
